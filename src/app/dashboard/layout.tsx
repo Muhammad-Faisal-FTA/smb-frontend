@@ -26,12 +26,12 @@ export default function DashboardLayout({
   const getCurrentPage = () => {
     if (pathname === '/dashboard') return 'dashboard';
     if (pathname === '/dashboard/input-data') return 'input-data';
-    if (pathname === '/dashboard/transactions') return 'transactions';
-    if (pathname === '/dashboard/products') return 'products';
+    // if (pathname === '/dashboard/transactions') return 'transactions';
+    // if (pathname === '/dashboard/products') return 'products';
     if (pathname === '/dashboard/insights') return 'insights';
     if (pathname === '/dashboard/alerts') return 'alerts';
     if (pathname === '/dashboard/reports') return 'reports';
-    if (pathname === '/dashboard/backup') return 'backup';
+    // if (pathname === '/dashboard/backup') return 'backup';
     if (pathname === '/dashboard/settings') return 'settings';
     return 'dashboard';
   };

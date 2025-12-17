@@ -14,6 +14,22 @@ export const getApiResponse = async (endPoint) => {
   }
 };
 
+export const getApiResponseS = async (endPoint, token) => {
+  console.log("token from S : ", token)
+  try {
+    // console.log("API Server:", server,endPoint);
+    const response = await axios.get(`${server}${endPoint}`, {
+    headers: {
+      Authorization: `${token}`, // <-- Access token
+      "Content-Type": "application/json"
+    }});
+    return response.data.data;
+  } catch (error) {
+    console.error("❌ Error in getApiResponseS:", error);
+    throw new Error("Unable to fetch API response data..!");
+  }
+};
+
 // src/api/
 
 // ... existing imports and getApiResponse ...
@@ -33,5 +49,54 @@ export const postApiResponse = async (endPoint, payload) => {
     
     // It is often better to throw the error.response so your UI knows WHY it failed (e.g., "Email already exists")
     throw error.response ? error.response.data : new Error("Unable to post API data..!");
+  }
+};
+export const postApiResponseS = async (endPoint, payload) => {
+  try {
+    // console.log("Posting to:", server, endPoint, payload);
+    
+    // axios.post takes the URL first, then the data (payload)
+    console.log("Posting payload:",server, endPoint, payload);
+    const response = await axios.post(
+      `${server}${endPoint}`, 
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    console.log("Post response:", response.data);
+    
+    return response.data.data;
+  } catch (error) {
+    console.error("Error in postApiResponse:", error);
+    
+    // It is often better to throw the error.response so your UI knows WHY it failed (e.g., "Email already exists")
+    throw error.response ? error.response.data : new Error("Unable to post API data..!");
+  }
+};
+
+
+export const patchApiResponseS = async (endPoint, payload, token) => {
+    console.log("inside the patch: ", endPoint, payload, token )
+  try {
+    const response = await axios.patch(
+      `${server}${endPoint}`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer  ${token}`,
+          "Content-Type": "application/json"
+
+        }
+      }
+    );
+
+    return response;
+  } catch (error) {
+    console.error("❌ Error in updateApiResponseS:", error?.response || error);
+    throw new Error("Unable to update API data.");
   }
 };

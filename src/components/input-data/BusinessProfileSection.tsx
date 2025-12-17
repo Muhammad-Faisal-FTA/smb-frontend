@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Building2, ChevronDown, ChevronUp, Save, RotateCcw, CheckCircle } from 'lucide-react';
+import { patchApiResponseS } from "@/utils/ApiResponse";
+
 
 interface BusinessProfileSectionProps {
   onCompletionChange: (percentage: number) => void;
@@ -10,13 +12,14 @@ interface BusinessProfileSectionProps {
 export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [formData, setFormData] = useState({
-    businessName: '',
-    sector: '',
-    businessAge: '',
-    employees: '',
-    region: '',
-    annualRevenue: '',
-    operatingModel: '',
+    businessName: "",
+    sector: "",
+    businessAge: "",
+    employees: "",
+    region: "",
+    annualRevenue: "",
+    operatingModel: "",
+    adminEmail: '',
   });
 
   const totalFields = Object.keys(formData).length;
@@ -27,24 +30,56 @@ export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSe
     onCompletionChange(percentage);
   }, [formData, totalFields]);
 
+  const buildPayload = () => ({
+    businessName: formData.businessName.trim(),
+    businessType: formData.sector,
+    businessAge: Number(formData.businessAge),
+    employeesRange: formData.employees,
+    region: formData.region.trim(),
+    annualRevenueBracket: formData.annualRevenue,
+    operatingModel: formData.operatingModel,
+    adminEmail: formData.adminEmail,
+  });
+
+  const endpoint = `/business-profile`;
+
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    // Save logic here
-    alert('Business profile data saved!');
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+
+      if (!token) {
+        alert("Authentication required. Please login again.");
+        return;
+      }
+
+      const payload = buildPayload();
+      console.log("this is Patch data: ",endpoint, payload, token)
+
+      const result = await patchApiResponseS(endpoint, payload, token);
+      console.log(result)
+      alert("Business profile saved successfully!");
+    } catch (error) {
+      console.log("Save failed:", error);
+      
+      alert("Failed to save business profile.");
+    }
   };
+
 
   const handleReset = () => {
     setFormData({
-      businessName: '',
-      sector: '',
-      businessAge: '',
-      employees: '',
-      region: '',
-      annualRevenue: '',
-      operatingModel: '',
+      businessName: "",
+      sector: "",
+      businessAge: "",
+      employees: "",
+      region: "",
+      annualRevenue: "",
+      operatingModel: "",
+      adminEmail: '',
     });
   };
 
@@ -73,12 +108,15 @@ export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSe
           </div>
           <div className="text-left">
             <h3 className="text-slate-900">Business Profile</h3>
-            <p className="text-slate-600">Core business information and details</p>
+            <p className="text-slate-600">
+              Core business information and details
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-slate-600">
-            {Object.values(formData).filter(v => v).length}/{totalFields} complete
+            {Object.values(formData).filter((v) => v).length}/{totalFields}{" "}
+            complete
           </span>
           {isExpanded ? (
             <ChevronUp className="w-5 h-5 text-slate-400" />
@@ -99,7 +137,7 @@ export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSe
               <input
                 type="text"
                 value={formData.businessName}
-                onChange={(e) => handleChange('businessName', e.target.value)}
+                onChange={(e) => handleChange("businessName", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter business name"
               />
@@ -111,7 +149,7 @@ export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSe
               </label>
               <select
                 value={formData.sector}
-                onChange={(e) => handleChange('sector', e.target.value)}
+                onChange={(e) => handleChange("sector", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select sector</option>
@@ -132,7 +170,7 @@ export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSe
               <input
                 type="number"
                 value={formData.businessAge}
-                onChange={(e) => handleChange('businessAge', e.target.value)}
+                onChange={(e) => handleChange("businessAge", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0"
                 min="0"
@@ -145,7 +183,7 @@ export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSe
               </label>
               <select
                 value={formData.employees}
-                onChange={(e) => handleChange('employees', e.target.value)}
+                onChange={(e) => handleChange("employees", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select range</option>
@@ -165,7 +203,7 @@ export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSe
               <input
                 type="text"
                 value={formData.region}
-                onChange={(e) => handleChange('region', e.target.value)}
+                onChange={(e) => handleChange("region", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="e.g., California, USA"
               />
@@ -177,7 +215,7 @@ export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSe
               </label>
               <select
                 value={formData.annualRevenue}
-                onChange={(e) => handleChange('annualRevenue', e.target.value)}
+                onChange={(e) => handleChange("annualRevenue", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select bracket</option>
@@ -196,7 +234,7 @@ export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSe
               </label>
               <select
                 value={formData.operatingModel}
-                onChange={(e) => handleChange('operatingModel', e.target.value)}
+                onChange={(e) => handleChange("operatingModel", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select model</option>
@@ -207,6 +245,19 @@ export function BusinessProfileSection({ onCompletionChange }: BusinessProfileSe
                 <option value="subscription">Subscription-based</option>
                 <option value="other">Other</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-slate-700 mb-2">
+                Admin Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                value={formData.adminEmail}
+                onChange={(e) => handleChange("adminEmail", e.target.value)}
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g admin@company.com | ad@comp.pk.com | ad@comp.gmail.com"
+              />
             </div>
           </div>
 

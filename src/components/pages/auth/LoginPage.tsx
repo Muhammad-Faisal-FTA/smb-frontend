@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TrendingUp, Mail, Lock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { postApiResponse } from "@/utils/ApiResponse";
-
+import  {useRouter}  from "next/navigation";
 // Note:- TrendingUp, Mail, Lock, ArrowRight are icon components from lucide-react library. TrendingUp is used for logo, Mail for email input, Lock for password input, and ArrowRight for the submit button.
 
 interface LoginPageProps {
@@ -15,6 +15,7 @@ interface LoginPageProps {
 export  function LoginPage({ onLogin }: LoginPageProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const route = useRouter();
   const endpoint = `/auth/user-login`;
 
   //=========== Handle Form Submission ===========
@@ -23,13 +24,22 @@ export  function LoginPage({ onLogin }: LoginPageProps) {
     // payload the login logic here, e.g., API call to authenticate user
     try {
       const payload = { email: email, password: password };
-      const result =  postApiResponse(endpoint, payload);
+      const result = await postApiResponse(endpoint, payload);
       console.log("Login successful:", result);
+      // Typically after login:
+      const accessToken = result.accessToken;
+      // console.log(accessToken)
+      const refreshToken = result.refreshToken;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      result ? onLogin() : null; // Call the onLogin callback to indicate successful login from parent component.
     } catch (error) {
+      alert("Login failed. Please check your credentials and try again.");
       console.log(error);
+      route.push('/login');
       return; // Exit if login fails
     }
-    onLogin(); // Call the onLogin callback to indicate successful login from parent component, e.g., to redirect or update state.
   };
 
   //=========== UI Structure of the Login Page ===========

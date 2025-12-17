@@ -24,12 +24,12 @@ interface SidebarProps {
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'input-data', label: 'Input Data', icon: PenSquare },
-  { id: 'transactions', label: 'Transactions', icon: Receipt },
-  { id: 'products', label: 'Products & Inventory', icon: Package },
+  // { id: 'transactions', label: 'Transactions', icon: Receipt },
+  // { id: 'products', label: 'Products & Inventory', icon: Package },
   { id: 'insights', label: 'AI Insights', icon: Sparkles },
   { id: 'alerts', label: 'Alerts Center', icon: Bell },
   { id: 'reports', label: 'Reports', icon: FileText },
-  { id: 'backup', label: 'Backup & Restore', icon: Database },
+  // { id: 'backup', label: 'Backup & Restore', icon: Database },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 

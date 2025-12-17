@@ -9,6 +9,8 @@ const data = [
   { month: 'Sep', revenue: 108000, expenses: 71000 },
   { month: 'Oct', revenue: 118000, expenses: 76000 },
   { month: 'Nov', revenue: 124580, expenses: 78340 },
+  { month: 'Dec', revenue: 130000, expenses: 80000 },
+
 ];
 
 export function RevenueExpenseChart() {
