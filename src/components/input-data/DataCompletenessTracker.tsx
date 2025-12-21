@@ -22,7 +22,7 @@ export function DataCompletenessTracker({ completion }: DataCompletenessTrackerP
     { id: 'assetsLiabilities', label: 'Assets & Liabilities', value: completion.assetsLiabilities },
     { id: 'customerReceivables', label: 'Customer & Receivables', value: completion.customerReceivables },
     { id: 'vendorPayables', label: 'Vendor & Payables', value: completion.vendorPayables },
-    { id: 'transactionSummary', label: 'Transaction Summary', value: completion.transactionSummary },
+    // { id: 'transactionSummary', label: 'Transaction Summary', value: completion.transactionSummary }, hide due to not in use
   ];
 
   const totalCompletion = Math.round(

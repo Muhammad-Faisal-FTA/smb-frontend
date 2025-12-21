@@ -20,7 +20,7 @@ export const getApiResponseS = async (endPoint, token) => {
     // console.log("API Server:", server,endPoint);
     const response = await axios.get(`${server}${endPoint}`, {
     headers: {
-      Authorization: `${token}`, // <-- Access token
+      Authorization: `Bearer ${token}`, // <-- Access token
       "Content-Type": "application/json"
     }});
     return response.data.data;
@@ -51,7 +51,7 @@ export const postApiResponse = async (endPoint, payload) => {
     throw error.response ? error.response.data : new Error("Unable to post API data..!");
   }
 };
-export const postApiResponseS = async (endPoint, payload) => {
+export const postApiResponseS = async (endPoint, payload, token) => {
   try {
     // console.log("Posting to:", server, endPoint, payload);
     
@@ -87,7 +87,7 @@ export const patchApiResponseS = async (endPoint, payload, token) => {
       payload,
       {
         headers: {
-          Authorization: `Bearer  ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
 
         }

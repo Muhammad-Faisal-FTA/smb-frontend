@@ -9,11 +9,13 @@ import { AssetsLiabilitiesSection } from '../input-data/AssetsLiabilitiesSection
 import { CustomerReceivablesSection } from '../input-data/CustomerReceivablesSection';
 import { VendorPayablesSection } from '../input-data/VendorPayablesSection';
 import { TransactionSummarySection } from '../input-data/TransactionSummarySection';
+import {FinancialHealthSection} from '../input-data/FinancialData'
 import { PenSquare } from 'lucide-react';
 
 export function InputDataPage() {
   const [sectionCompletion, setSectionCompletion] = useState({
     businessProfile: 0,
+    FinancialHealthSection: 0,
     revenue: 0,
     expense: 0,
     assetsLiabilities: 0,
@@ -22,8 +24,21 @@ export function InputDataPage() {
     transactionSummary: 0,
   });
 
-  const updateCompletion = (section: keyof typeof sectionCompletion, percentage: number) => {
-    setSectionCompletion(prev => ({ ...prev, [section]: percentage }));
+  // const updateCompletion = (section: keyof typeof sectionCompletion, percentage: number) => {
+  //   setSectionCompletion(prev => ({ ...prev, [section]: percentage }));
+  // };
+
+  const updateCompletion = (
+    section: keyof typeof sectionCompletion,
+    percentage: number
+  ) => {
+    setSectionCompletion((prev) => {
+      // ✅ Only update if value changed
+      if (prev[section] === percentage) {
+        return prev; // Don't create new object
+      }
+      return { ...prev, [section]: percentage };
+    });
   };
 
   return (
@@ -38,7 +53,8 @@ export function InputDataPage() {
           <div className="min-w-0">
             <h1 className="text-slate-900 mb-1">Input Financial Data</h1>
             <p className="text-slate-600">
-              Enter your business financial information for AI-powered forecasting and insights
+              Enter your business financial information for AI-powered
+              forecasting and insights
             </p>
           </div>
         </div>
@@ -47,20 +63,46 @@ export function InputDataPage() {
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-6">
           <h3 className="text-slate-900 mb-2">Why Input Data?</h3>
           <p className="text-slate-700 leading-relaxed text-sm sm:text-base">
-            The more complete your financial data, the more accurate our AI forecasting becomes. 
-            Fill in as many sections as possible to unlock powerful insights, risk detection, 
-            and predictive analytics for your business.
+            The more complete your financial data, the more accurate our AI
+            forecasting becomes. Fill in as many sections as possible to unlock
+            powerful insights, risk detection, and predictive analytics for your
+            business.
           </p>
         </div>
 
         {/* Data Input Sections */}
-        <BusinessProfileSection onCompletionChange={(pct) => updateCompletion('businessProfile', pct)} />
-        <RevenueSection onCompletionChange={(pct) => updateCompletion('revenue', pct)} />
-        <ExpenseSection onCompletionChange={(pct) => updateCompletion('expense', pct)} />
-        <AssetsLiabilitiesSection onCompletionChange={(pct) => updateCompletion('assetsLiabilities', pct)} />
-        <CustomerReceivablesSection onCompletionChange={(pct) => updateCompletion('customerReceivables', pct)} />
-        <VendorPayablesSection onCompletionChange={(pct) => updateCompletion('vendorPayables', pct)} />
-        <TransactionSummarySection onCompletionChange={(pct) => updateCompletion('transactionSummary', pct)} />
+        <BusinessProfileSection
+          onCompletionChange={(pct) => updateCompletion("businessProfile", pct)}
+        />
+        <FinancialHealthSection
+          onCompletionChange={(pct) =>
+            updateCompletion("FinancialHealthSection", pct)
+          }
+        />
+        <RevenueSection
+          onCompletionChange={(pct) => updateCompletion("revenue", pct)}
+        />
+        <ExpenseSection
+          onCompletionChange={(pct) => updateCompletion("expense", pct)}
+        />
+        <AssetsLiabilitiesSection
+          onCompletionChange={(pct) =>
+            updateCompletion("assetsLiabilities", pct)
+          }
+        />
+        <CustomerReceivablesSection
+          onCompletionChange={(pct) =>
+            updateCompletion("customerReceivables", pct)
+          }
+        />
+        <VendorPayablesSection
+          onCompletionChange={(pct) => updateCompletion("vendorPayables", pct)}
+        />
+        {/* <TransactionSummarySection hide due to not in use
+          onCompletionChange={(pct) =>
+            updateCompletion("transactionSummary", pct)
+          }
+        /> */}
       </div>
 
       {/* Floating Sidebar */}

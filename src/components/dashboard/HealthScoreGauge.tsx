@@ -71,9 +71,8 @@ export function HealthScoreGauge() {
     },
   });
 
-  const endpoint = `/business-health`;
-  const token = localStorage.getItem("accessToken");
-  // console.log("token", token)
+  const endpoint = `/health/business-health`;
+  
   const getScoreColor = (score: number) => {
     if (score >= 80)
       return {
@@ -125,10 +124,17 @@ export function HealthScoreGauge() {
     };
   };
   useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    console.log("token in health Score:", token);
+    if (!token) {
+      alert("Authentication required. Please login again.");
+      //  setLoading(false);
+      return;
+    }
     const fetchHealthScore = async () => {
       const result = await getApiResponseS(endpoint, token);
       // console.log("token", result)
-      console.log("result", result);
+      console.log("result fetchHealthScore", result);
       setScore(result.finalScore);
       setStatus(result.status); //
       setHealthPillars(result.breakdown);
@@ -140,36 +146,42 @@ export function HealthScoreGauge() {
   const factors = [
     {
       label: "Cash Position",
-      score: healthPillars.cashflow?.cashflowScore ?? 0,
+      score: Math.round(healthPillars.cashflow?.cashflowScore ?? 0),
       icon: CheckCircle,
-      status: getPillarScoreColor(healthPillars.cashflow?.cashflowScore ?? 0),
+      status: getPillarScoreColor(
+        Math.round(healthPillars.cashflow?.cashflowScore ?? 0)
+      ),
     },
     {
       label: "Revenue Growth", //Groth efficency
-      score: healthPillars.efficiency?.efficiencyScore ?? 0,
+      score: Math.round(healthPillars.efficiency?.efficiencyScore ?? 0),
       icon: CheckCircle,
       status: getPillarScoreColor(
-        healthPillars.efficiency?.efficiencyScore ?? 0
+        Math.round(healthPillars.efficiency?.efficiencyScore ?? 0)
       ),
     },
     {
       label: "Solvency",
-      score: healthPillars.solvency?.solvencyScore ?? 0,
+      score: Math.round(healthPillars.solvency?.solvencyScore ?? 0),
       icon: CheckCircle,
-      status: getPillarScoreColor(healthPillars.solvency?.solvencyScore ?? 0),
+      status: getPillarScoreColor(
+        Math.round(healthPillars.solvency?.solvencyScore ?? 0)
+      ),
     },
     {
       label: "Liquidity Ratio",
-      score: healthPillars.liquidity?.liquidityScore ?? 0,
+      score: Math.round(healthPillars.liquidity?.liquidityScore ?? 0),
       icon: AlertTriangle,
-      status: getPillarScoreColor(healthPillars.liquidity?.liquidityScore ?? 0),
+      status: getPillarScoreColor(
+        Math.round(healthPillars.liquidity?.liquidityScore ?? 0)
+      ),
     },
     {
       label: "Expense Control", //profitability
-      score: healthPillars.profitability?.profitabilityScore ?? 0,
+      score: Math.round(healthPillars.profitability?.profitabilityScore ?? 0),
       icon: Info,
       status: getPillarScoreColor(
-        healthPillars.profitability?.profitabilityScore ?? 0
+        Math.round(healthPillars.profitability?.profitabilityScore ?? 0)
       ),
     },
   ];
