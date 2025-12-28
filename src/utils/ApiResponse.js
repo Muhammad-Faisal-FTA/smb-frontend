@@ -89,7 +89,6 @@ export const patchApiResponseS = async (endPoint, payload, token) => {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
-
         }
       }
     );

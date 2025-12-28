@@ -53,7 +53,8 @@ export function HeroPanel() {
       <div className="mb-6">
         <h1 className="text-slate-900 mb-2">Welcome back, John!</h1>
         <p className="text-slate-600">
-          Here's what's happening with your projects today. You have 3 pending tasks and 12 active projects.
+          Here&apos;s what&apos;s happening with your projects today. You have 3
+          pending tasks and 12 active projects.
         </p>
       </div>
 
@@ -67,10 +68,16 @@ export function HeroPanel() {
               className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between mb-4">
-                <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-lg flex items-center justify-center`}>
+                <div
+                  className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-lg flex items-center justify-center`}
+                >
                   <Icon className="w-6 h-6 text-white" />
                 </div>
-                <span className={`text-sm ${stat.positive ? 'text-green-600' : 'text-red-600'}`}>
+                <span
+                  className={`text-sm ${
+                    stat.positive ? "text-green-600" : "text-red-600"
+                  }`}
+                >
                   {stat.change}
                 </span>
               </div>
@@ -102,9 +109,9 @@ export function HeroPanel() {
               <YAxis stroke="#64748b" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
+                  backgroundColor: "white",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "8px",
                 }}
               />
               <Area
@@ -132,9 +139,9 @@ export function HeroPanel() {
               <YAxis stroke="#64748b" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
+                  backgroundColor: "white",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "8px",
                 }}
               />
               <Bar dataKey="revenue" fill="#8b5cf6" radius={[8, 8, 0, 0]} />

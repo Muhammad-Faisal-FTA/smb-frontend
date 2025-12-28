@@ -87,6 +87,146 @@
 
 
 
+// "use client";
+
+// import { useEffect, useState } from "react";
+// import {
+//   AlertTriangle,
+//   ArrowRight,
+//   Bell,
+//   AlertCircle,
+//   Info,
+// } from "lucide-react";
+// import { getSocket } from "@/lib/socket";
+
+// interface Alert {
+//   id: string;
+//   type: "CRITICAL" | "WARNING" | "INFO";
+//   title: string;
+//   message: string;
+//   createdAt: string;
+// }
+
+// export function AlertsWidget() {
+//   const [alerts, setAlerts] = useState<Alert[]>([]);
+//   const [unreadCount, setUnreadCount] = useState(0);
+
+//   /* 1️⃣ Initial load (HTTP) */
+//   useEffect(() => {
+//    fetch("http://localhost:5000/api/v1/notifications", {
+//      method: "GET",
+//      credentials: "include", // This sends cookies
+//      headers: {
+//        "Content-Type": "application/json",
+//        // Add your authorization header here:
+//        Authorization: `Bearer ${localStorage.getItem("token")}`, // or however you store your token
+//      },
+//    })
+//      .then((res) => res.json())
+//      .then((data) => {
+//        setAlerts(data.data.slice(0, 3));
+//        setUnreadCount(data.data.length);
+//      });
+//   }, []);
+
+//   /* 2️⃣ Socket real-time updates */
+//   useEffect(() => {
+//     const socket = getSocket();
+//     const userId = localStorage.getItem("userId")
+//     console.log(userId)
+//     socket.connect();
+//     socket.emit("join", userId); // replace with real user id
+
+//     socket.on("notification:new", (alert: Alert) => {
+//       setAlerts((prev) => [alert, ...prev].slice(0, 3));
+//       setUnreadCount((prev) => prev + 1);
+//     });
+
+//     return () => {
+//       socket.off("notification:new");
+//       socket.disconnect();
+//     };
+//   }, []);
+
+//   const iconMap = {
+//     CRITICAL: AlertCircle,
+//     WARNING: AlertTriangle,
+//     INFO: Info,
+//   };
+
+//   const styleMap = {
+//     CRITICAL: { bg: "#FEE2E2", border: "#FECACA", icon: "#EF4444" },
+//     WARNING: { bg: "#FFF7ED", border: "#FED7AA", icon: "#F97316" },
+//     INFO: { bg: "#DBEAFE", border: "#BFDBFE", icon: "#0EA5E9" },
+//   };
+
+//   return (
+//     <div
+//       className="rounded-xl p-4 sm:p-6 border shadow-sm h-67 overflow-auto"
+//       style={{ backgroundColor: "#FFFFFF", borderColor: "#D1D5DB" }}
+//     >
+//       {/* Header */}
+//       <div className="flex items-center justify-between mb-4">
+//         <div className="flex items-center gap-2">
+//           <Bell className="w-5 h-5" style={{ color: "#4B5563" }} />
+//           <h3 style={{ color: "#111827" }}>Recent Alerts</h3>
+//         </div>
+
+//         {unreadCount > 0 && (
+//           <span
+//             className="px-2 py-1 rounded-full"
+//             style={{ backgroundColor: "#FEE2E2", color: "#991B1B" }}
+//           >
+//             {unreadCount} new
+//           </span>
+//         )}
+//       </div>
+
+//       {/* Alerts */}
+//       <div className="space-y-3 mb-4">
+//         {alerts.map((alert) => {
+//           const Icon = iconMap[alert.type];
+//           const styles = styleMap[alert.type];
+
+//           return (
+//             <div
+//               key={alert.id}
+//               className="p-3 rounded-lg border"
+//               style={{ backgroundColor: styles.bg, borderColor: styles.border }}
+//             >
+//               <div className="flex items-start gap-3">
+//                 <Icon
+//                   className="w-5 h-5 mt-0.5"
+//                   style={{ color: styles.icon }}
+//                 />
+//                 <div className="flex-1">
+//                   <p style={{ color: "#111827" }}>{alert.title}</p>
+//                   <p style={{ color: "#4B5563" }}>{alert.message}</p>
+//                   <p className="mt-1" style={{ color: "#6B7280" }}>
+//                     {new Date(alert.createdAt).toLocaleString()}
+//                   </p>
+//                 </div>
+//               </div>
+//             </div>
+//           );
+//         })}
+//       </div>
+
+//       {/* CTA */}
+//       <button
+//         className="w-full py-2 rounded-lg flex items-center justify-center gap-2"
+//         style={{ color: "#4F46E5" }}
+//       >
+//         <span>View All Alerts</span>
+//         <ArrowRight className="w-4 h-4" />
+//       </button>
+//     </div>
+//   );
+// }
+
+
+
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -113,8 +253,14 @@ export function AlertsWidget() {
 
   /* 1️⃣ Initial load (HTTP) */
   useEffect(() => {
-    fetch("/api/v1/notifications?unread=true", {
-      credentials: "include",
+    fetch("http://localhost:5000/api/v1/notifications/summary", {
+      method: "GET",
+      credentials: "include", // This sends cookies
+      headers: {
+        "Content-Type": "application/json",
+        // Add your authorization header here:
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // or however you store your token
+      },
     })
       .then((res) => res.json())
       .then((data) => {
@@ -126,9 +272,10 @@ export function AlertsWidget() {
   /* 2️⃣ Socket real-time updates */
   useEffect(() => {
     const socket = getSocket();
-
+    const userId = localStorage.getItem("userId");
+    console.log(userId);
     socket.connect();
-    socket.emit("join", "USER_ID_FROM_AUTH"); // replace with real user id
+    socket.emit("join", userId); // replace with real user id
 
     socket.on("notification:new", (alert: Alert) => {
       setAlerts((prev) => [alert, ...prev].slice(0, 3));

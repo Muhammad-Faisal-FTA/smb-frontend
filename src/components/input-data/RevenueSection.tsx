@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { DollarSign, ChevronDown, ChevronUp, Save, RotateCcw, CheckCircle } from 'lucide-react';
+import { postApiResponseS } from '@/utils/ApiResponse';
 
 interface RevenueSectionProps {
   onCompletionChange: (percentage: number) => void;
@@ -20,18 +21,50 @@ export function RevenueSection({ onCompletionChange }: RevenueSectionProps) {
 
   const totalFields = Object.keys(formData).length;
 
+  const endPoint = "/input/revenue/insert";
+  
   useEffect(() => {
     const filledFields = Object.values(formData).filter(val => val !== '').length;
     const percentage = Math.round((filledFields / totalFields) * 100);
     onCompletionChange(percentage);
   }, [formData, totalFields]);
 
+  const buildPayload = () => ({
+    periodValue: new Date().toISOString().slice(0, 7), // e.g. "2025-01"
+
+    monthlyRevenue: Number(formData.monthlyRevenue),
+
+    salesChannel: formData.salesChannels.trim(),
+
+    topProductsServices: formData.topProducts.trim(),
+
+    averageSellingPrice: Number(formData.avgSellingPrice),
+
+    seasonalPattern: formData.seasonalPatterns.trim(),
+
+    creditSalesPercentage: Number(formData.creditSalesPercentage),
+  });
+
+
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    alert('Revenue data saved!');
+  const handleInsert = () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const payload = buildPayload()
+      if(!token){
+        console.log("Token not found in revenue form.")
+      }
+      const result = postApiResponseS(endPoint, payload, token )
+      console.log("result", result)
+      alert('Revenue data saved!');
+    } catch (error) {
+      console.log("result", error)
+      
+      alert('Revenue data Failed!');
+    }
   };
 
   const handleReset = () => {
@@ -196,11 +229,11 @@ export function RevenueSection({ onCompletionChange }: RevenueSectionProps) {
               <span>Validate</span>
             </button>
             <button
-              onClick={handleSave}
+              onClick={handleInsert}
               className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
-              <span>Save</span>
+              <span>Insert</span>
             </button>
           </div>
         </div>

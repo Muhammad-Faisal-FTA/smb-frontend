@@ -1,33 +1,77 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Wallet, ChevronDown, ChevronUp, Save, RotateCcw, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from "react";
+import {
+  Wallet,
+  ChevronDown,
+  ChevronUp,
+  Save,
+  RotateCcw,
+  CheckCircle,
+} from "lucide-react";
+import { postApiResponseS } from "@/utils/ApiResponse";
 
 interface AssetsLiabilitiesSectionProps {
   onCompletionChange: (percentage: number) => void;
 }
 
-export function AssetsLiabilitiesSection({ onCompletionChange }: AssetsLiabilitiesSectionProps) {
+export function AssetsLiabilitiesSection({
+  onCompletionChange,
+}: AssetsLiabilitiesSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+
   const [formData, setFormData] = useState({
-    cashOnHand: '',
-    bankBalance: '',
-    accountsReceivable: '',
-    inventoryValue: '',
-    currentLiabilities: '',
-    longTermDebt: '',
-    vendorPayables: '',
+    periodValue: new Date().toISOString().slice(0, 7), // YYYY-MM
+    cashOnHand: "",
+    bankBalance: "",
+    accountsReceivable: "",
+    inventoryValue: "",
+    currentLiabilities: "",
+    longTermDebt: "",
+    vendorPayables: "",
   });
 
-  const totalFields = Object.keys(formData).length;
+  const totalFields = Object.keys(formData).length - 1;
+  const endPoint = "/input/assets-liabilities/monthly";
 
   useEffect(() => {
-    const filledFields = Object.values(formData).filter(val => val !== '').length;
-    onCompletionChange(Math.round((filledFields / totalFields) * 100));
-  }, [formData, totalFields]);
+    const filledFields = Object.entries(formData).filter(
+      ([key, val]) => key !== "periodValue" && val !== ""
+    ).length;
 
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    onCompletionChange(Math.round((filledFields / totalFields) * 100));
+  }, [formData, totalFields, onCompletionChange]);
+
+  const handleChange = (field: keyof typeof formData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const safeNumber = (value: string) => (value === "" ? 0 : Number(value));
+
+  const buildPayload = () => ({
+    periodValue: formData.periodValue,
+    cash: safeNumber(formData.cashOnHand),
+    bankBalance: safeNumber(formData.bankBalance),
+    accountsReceivable: safeNumber(formData.accountsReceivable),
+    inventory: safeNumber(formData.inventoryValue),
+    currentLiabilities: safeNumber(formData.currentLiabilities),
+    totalDebt: safeNumber(formData.longTermDebt),
+    payables: safeNumber(formData.vendorPayables),
+  });
+
+  const handleInsert = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) throw new Error("Auth token missing");
+
+      const payload = buildPayload();
+      await postApiResponseS(endPoint, payload, token);
+
+      alert("Assets & Liabilities saved successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to save Assets & Liabilities");
+    }
   };
 
   return (
@@ -47,9 +91,14 @@ export function AssetsLiabilitiesSection({ onCompletionChange }: AssetsLiabiliti
         </div>
         <div className="flex items-center gap-4">
           <span className="text-slate-600">
-            {Object.values(formData).filter(v => v).length}/{totalFields} complete
+            {Object.values(formData).filter((v) => v).length}/{totalFields}{" "}
+            complete
           </span>
-          {isExpanded ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+          {isExpanded ? (
+            <ChevronUp className="w-5 h-5 text-slate-400" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-slate-400" />
+          )}
         </div>
       </button>
 
@@ -57,11 +106,22 @@ export function AssetsLiabilitiesSection({ onCompletionChange }: AssetsLiabiliti
         <div className="p-6 pt-0 border-t border-slate-200">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
+              <label className="block text-slate-700 mb-2">Period Start</label>
+              <input
+                type="month"
+                value={formData.periodValue}
+                onChange={(e) => handleChange("periodValue", e.target.value)}
+                // className="w-full px-4 py-3 border border-slate-300 rounded-lg"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="0.00"
+              />
+            </div>
+            <div>
               <label className="block text-slate-700 mb-2">Cash on Hand</label>
               <input
                 type="number"
                 value={formData.cashOnHand}
-                onChange={(e) => handleChange('cashOnHand', e.target.value)}
+                onChange={(e) => handleChange("cashOnHand", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
@@ -71,57 +131,71 @@ export function AssetsLiabilitiesSection({ onCompletionChange }: AssetsLiabiliti
               <input
                 type="number"
                 value={formData.bankBalance}
-                onChange={(e) => handleChange('bankBalance', e.target.value)}
+                onChange={(e) => handleChange("bankBalance", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
             </div>
             <div>
-              <label className="block text-slate-700 mb-2">Accounts Receivable</label>
+              <label className="block text-slate-700 mb-2">
+                Accounts Receivable
+              </label>
               <input
                 type="number"
                 value={formData.accountsReceivable}
-                onChange={(e) => handleChange('accountsReceivable', e.target.value)}
+                onChange={(e) =>
+                  handleChange("accountsReceivable", e.target.value)
+                }
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
             </div>
             <div>
-              <label className="block text-slate-700 mb-2">Inventory Value</label>
+              <label className="block text-slate-700 mb-2">
+                Inventory Value
+              </label>
               <input
                 type="number"
                 value={formData.inventoryValue}
-                onChange={(e) => handleChange('inventoryValue', e.target.value)}
+                onChange={(e) => handleChange("inventoryValue", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
             </div>
             <div>
-              <label className="block text-slate-700 mb-2">Current Liabilities</label>
+              <label className="block text-slate-700 mb-2">
+                Current Liabilities
+              </label>
               <input
                 type="number"
                 value={formData.currentLiabilities}
-                onChange={(e) => handleChange('currentLiabilities', e.target.value)}
+                onChange={(e) =>
+                  handleChange("currentLiabilities", e.target.value)
+                }
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
             </div>
             <div>
-              <label className="block text-slate-700 mb-2">Long-Term Debt</label>
+              <label className="block text-slate-700 mb-2">
+                Long-Term Debt
+              </label>
               <input
                 type="number"
                 value={formData.longTermDebt}
-                onChange={(e) => handleChange('longTermDebt', e.target.value)}
+                onChange={(e) => handleChange("longTermDebt", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
             </div>
             <div>
-              <label className="block text-slate-700 mb-2">Vendor Payables</label>
+              <label className="block text-slate-700 mb-2">
+                Vendor Payables
+              </label>
               <input
                 type="number"
                 value={formData.vendorPayables}
-                onChange={(e) => handleChange('vendorPayables', e.target.value)}
+                onChange={(e) => handleChange("vendorPayables", e.target.value)}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
               />
@@ -130,10 +204,18 @@ export function AssetsLiabilitiesSection({ onCompletionChange }: AssetsLiabiliti
 
           <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-slate-200">
             <button
-              onClick={() => setFormData({
-                cashOnHand: '', bankBalance: '', accountsReceivable: '', inventoryValue: '',
-                currentLiabilities: '', longTermDebt: '', vendorPayables: '',
-              })}
+              onClick={() =>
+                setFormData({
+                  periodValue: new Date().toISOString().slice(0, 7),
+                  cashOnHand: "",
+                  bankBalance: "",
+                  accountsReceivable: "",
+                  inventoryValue: "",
+                  currentLiabilities: "",
+                  longTermDebt: "",
+                  vendorPayables: "",
+                })
+              }
               className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-2"
             >
               <RotateCcw className="w-4 h-4" />
@@ -143,9 +225,12 @@ export function AssetsLiabilitiesSection({ onCompletionChange }: AssetsLiabiliti
               <CheckCircle className="w-4 h-4" />
               <span>Validate</span>
             </button>
-            <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2">
+            <button
+              onClick={handleInsert}
+              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2"
+            >
               <Save className="w-4 h-4" />
-              <span>Save</span>
+              <span>Insert</span>
             </button>
           </div>
         </div>

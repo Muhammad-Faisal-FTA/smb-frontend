@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { TrendingUp, TrendingDown } from 'lucide-react';
@@ -30,15 +31,15 @@ export function KPICard({ title, value, change, trend, icon: Icon, status, perio
   const trendColor = trend === 'up' ? '#10B981' : '#EF4444';
 
   return (
-    <div 
+    <div
       className="rounded-xl p-4 sm:p-6 border-2 shadow-sm hover:shadow-md transition-all"
-      style={{ 
+      style={{
         backgroundColor: '#FFFFFF',
         borderColor: borderColors[status].border,
       }}
     >
       <div className="flex items-start justify-between mb-4">
-        <div 
+        <div
           className="w-12 h-12 rounded-lg flex items-center justify-center"
           style={{
             background: `linear-gradient(to bottom right, ${statusColors[status].from}, ${statusColors[status].to})`,
@@ -51,10 +52,15 @@ export function KPICard({ title, value, change, trend, icon: Icon, status, perio
           <span>{change}</span>
         </div>
       </div>
-      
+
       <h3 style={{ color: '#111827' }} className="mb-1">{value}</h3>
       <p style={{ color: '#4B5563' }} className="mb-1">{title}</p>
       <p style={{ color: '#6B7280' }}>{period}</p>
     </div>
   );
 }
+
+
+
+
+

@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { Building, ChevronDown, ChevronUp, Save, RotateCcw, CheckCircle } from 'lucide-react';
+import { postApiResponseS } from '@/utils/ApiResponse';
 
 interface VendorPayablesSectionProps {
   onCompletionChange: (percentage: number) => void;
 }
+
+const toNumber = (value: string) => (value === "" ? 0 : Number(value));
 
 export function VendorPayablesSection({ onCompletionChange }: VendorPayablesSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -18,6 +21,28 @@ export function VendorPayablesSection({ onCompletionChange }: VendorPayablesSect
     earlyPaymentDiscounts: '',
   });
 
+  const endPoint = "/input/vendor-payables/monthly"; 
+  const buildPayload = () => {
+    return {
+      periodType: "monthly", // extensible
+      periodValue: new Date().toISOString().slice(0, 7), // YYYY-MM
+
+      totalVendors: toNumber(formData.totalVendors),
+
+      payablesAging: formData.payablesAging.trim(),
+      // later this can evolve to:
+      // { days30, days60, days90 }
+
+      avgPurchaseValue: toNumber(formData.avgPurchaseValue),
+
+      paymentTerms: formData.paymentTerms.trim(),
+
+      advancePaymentsPercentage: toNumber(formData.advancePaymentsPercentage),
+
+      earlyPaymentDiscounts: toNumber(formData.earlyPaymentDiscounts),
+    };
+  };
+
   const totalFields = Object.keys(formData).length;
 
   useEffect(() => {
@@ -28,6 +53,23 @@ export function VendorPayablesSection({ onCompletionChange }: VendorPayablesSect
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  const handleInsert = () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const payload = buildPayload()
+        if(!token){
+          console.log("Token not found in revenue form.")
+        }
+        const result = postApiResponseS(endPoint, payload, token )
+        console.log("result", result)
+        alert('Revenue data saved!');
+      } catch (error) {
+        console.log("result", error)
+        
+        alert('Revenue data Failed!');
+      }
+    };
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -141,9 +183,10 @@ export function VendorPayablesSection({ onCompletionChange }: VendorPayablesSect
               <CheckCircle className="w-4 h-4" />
               <span>Validate</span>
             </button>
-            <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2">
+            <button onClick={handleInsert}
+            className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2">
               <Save className="w-4 h-4" />
-              <span>Save</span>
+              <span>Insert</span>
             </button>
           </div>
         </div>

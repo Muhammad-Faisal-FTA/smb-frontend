@@ -13,12 +13,27 @@ const data = [
 
 ];
 
-export function RevenueExpenseChart() {
+interface RevenueExpensePoint {
+  month: string;
+  revenue: number;
+  expenses: number;
+}
+
+interface RevenueExpenseChartProps {
+  data: RevenueExpensePoint[];
+}
+
+export function RevenueExpenseChart({ data }: RevenueExpenseChartProps) {
   return (
-    <div className="rounded-xl p-6 border shadow-sm" style={{ backgroundColor: '#FFFFFF', borderColor: '#D1D5DB' }}>
+    <div
+      className="rounded-xl p-6 border shadow-sm"
+      style={{ backgroundColor: "#FFFFFF", borderColor: "#D1D5DB" }}
+    >
       <div className="mb-6">
-        <h3 style={{ color: '#111827' }} className="mb-1">Revenue vs Expenses</h3>
-        <p style={{ color: '#4B5563' }}>6-month trend analysis</p>
+        <h3 style={{ color: "#111827" }} className="mb-1">
+          Revenue vs Expenses
+        </h3>
+        <p style={{ color: "#4B5563" }}>6-month trend analysis</p>
       </div>
 
       <ResponsiveContainer width="100%" height={300}>
@@ -28,22 +43,14 @@ export function RevenueExpenseChart() {
           <YAxis stroke="#4B5563" />
           <Tooltip
             contentStyle={{
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #D1D5DB',
-              borderRadius: '8px',
+              backgroundColor: "#FFFFFF",
+              border: "1px solid #D1D5DB",
+              borderRadius: "8px",
             }}
           />
           <Legend />
-          <Bar
-            dataKey="revenue"
-            fill="#10B981"
-            radius={[8, 8, 0, 0]}
-          />
-          <Bar
-            dataKey="expenses"
-            fill="#EF4444"
-            radius={[8, 8, 0, 0]}
-          />
+          <Bar dataKey="revenue" fill="#10B981" radius={[8, 8, 0, 0]} />
+          <Bar dataKey="expenses" fill="#EF4444" radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

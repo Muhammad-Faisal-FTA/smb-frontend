@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { Users, ChevronDown, ChevronUp, Save, RotateCcw, CheckCircle } from 'lucide-react';
+import { postApiResponseS } from '@/utils/ApiResponse';
 
 interface CustomerReceivablesSectionProps {
   onCompletionChange: (percentage: number) => void;
 }
+const safeNumber = (value: string) => (value === "" ? 0 : Number(value));
 
 export function CustomerReceivablesSection({ onCompletionChange }: CustomerReceivablesSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -27,9 +29,49 @@ export function CustomerReceivablesSection({ onCompletionChange }: CustomerRecei
     onCompletionChange(Math.round((filledFields / totalFields) * 100));
   }, [formData, totalFields]);
 
+
+    const endPoint = "/input/customer-receivables/monthly";
+
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+  
+  const buildPayload = () => ({
+    periodValue: new Date().toISOString().slice(0, 7), // YYYY-MM
+
+    totalCustomers: safeNumber(formData.totalCustomers),
+
+    receivablesAging: {
+      days30: safeNumber(formData.receivables30),
+      days60: safeNumber(formData.receivables60),
+      days90: safeNumber(formData.receivables90),
+    },
+
+    avgInvoiceSize: safeNumber(formData.avgInvoiceSize),
+
+    paymentTerms: formData.paymentTerms.trim(),
+
+    badDebtPercentage: safeNumber(formData.badDebtPercentage),
+
+    repeatCustomerRate: safeNumber(formData.repeatCustomerRate),
+  });
+
+    const handleInsert = () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const payload = buildPayload();
+        if (!token) {
+          console.log("Token not found in revenue form.");
+        }
+        const result = postApiResponseS(endPoint, payload, token);
+        console.log("result", result);
+        alert("Revenue data saved!");
+      } catch (error) {
+        console.log("result", error);
+
+        alert("Revenue data Failed!");
+      }
+    };
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -163,9 +205,10 @@ export function CustomerReceivablesSection({ onCompletionChange }: CustomerRecei
               <CheckCircle className="w-4 h-4" />
               <span>Validate</span>
             </button>
-            <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2">
+            <button onClick={handleInsert}
+            className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2">
               <Save className="w-4 h-4" />
-              <span>Save</span>
+              <span>Insert</span>
             </button>
           </div>
         </div>

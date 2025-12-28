@@ -8,7 +8,7 @@ import { ExpenseSection } from '../input-data/ExpenseSection';
 import { AssetsLiabilitiesSection } from '../input-data/AssetsLiabilitiesSection';
 import { CustomerReceivablesSection } from '../input-data/CustomerReceivablesSection';
 import { VendorPayablesSection } from '../input-data/VendorPayablesSection';
-import { TransactionSummarySection } from '../input-data/TransactionSummarySection';
+// import { TransactionSummarySection } from '../input-data/TransactionSummarySection';
 import {FinancialHealthSection} from '../input-data/FinancialData'
 import { PenSquare } from 'lucide-react';
 

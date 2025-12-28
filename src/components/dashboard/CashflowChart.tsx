@@ -12,12 +12,27 @@ const data = [
   { month: 'Dec (Proj)', cashflow: 51000 },
 ];
 
-export function CashflowChart() {
+interface CashflowPoint {
+  month: string;
+  value: number;
+}
+
+interface CashflowChartProps {
+  data: CashflowPoint[];
+}
+
+
+export function CashflowChart({ data }: CashflowChartProps) {
   return (
-    <div className="rounded-xl p-6 border shadow-sm" style={{ backgroundColor: '#FFFFFF', borderColor: '#D1D5DB' }}>
+    <div
+      className="rounded-xl p-6 border shadow-sm"
+      style={{ backgroundColor: "#FFFFFF", borderColor: "#D1D5DB" }}
+    >
       <div className="mb-6">
-        <h3 style={{ color: '#111827' }} className="mb-1">Cashflow Trend</h3>
-        <p style={{ color: '#4B5563' }}>Monthly net cashflow with projection</p>
+        <h3 style={{ color: "#111827" }} className="mb-1">
+          Cashflow Trend
+        </h3>
+        <p style={{ color: "#4B5563" }}>Monthly net cashflow with projection</p>
       </div>
 
       <ResponsiveContainer width="100%" height={250}>
@@ -27,9 +42,9 @@ export function CashflowChart() {
           <YAxis stroke="#4B5563" />
           <Tooltip
             contentStyle={{
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #D1D5DB',
-              borderRadius: '8px',
+              backgroundColor: "#FFFFFF",
+              border: "1px solid #D1D5DB",
+              borderRadius: "8px",
             }}
           />
           <Legend />
@@ -38,7 +53,7 @@ export function CashflowChart() {
             fill="#0EA5E9"
             stroke="#0EA5E9"
             strokeWidth={3}
-            dot={{ fill: '#0EA5E9', r: 5 }}
+            dot={{ fill: "#0EA5E9", r: 5 }}
             activeDot={{ r: 7 }}
           />
         </LineChart>
