@@ -45,7 +45,7 @@
 //               : alert.type === 'warning'
 //               ? AlertTriangle
 //               : Info;
-          
+
 //           const styles =
 //             alert.type === 'critical'
 //               ? { bg: '#FEE2E2', border: '#FECACA', icon: '#EF4444' }
@@ -54,8 +54,8 @@
 //               : { bg: '#DBEAFE', border: '#BFDBFE', icon: '#0EA5E9' };
 
 //           return (
-//             <div 
-//               key={alert.id} 
+//             <div
+//               key={alert.id}
 //               className="p-3 rounded-lg border"
 //               style={{ backgroundColor: styles.bg, borderColor: styles.border }}
 //             >
@@ -72,7 +72,7 @@
 //         })}
 //       </div>
 
-//       <button 
+//       <button
 //         className="w-full py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
 //         style={{ color: '#4F46E5', backgroundColor: 'transparent' }}
 //         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#EEF2FF'}
@@ -84,8 +84,6 @@
 //     </div>
 //   );
 // }
-
-
 
 // "use client";
 
@@ -224,9 +222,6 @@
 //   );
 // }
 
-
-
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -253,28 +248,39 @@ export function AlertsWidget() {
 
   /* 1️⃣ Initial load (HTTP) */
   useEffect(() => {
-    fetch("http://localhost:5000/api/v1/notifications/summary", {
-      method: "GET",
-      credentials: "include", // This sends cookies
-      headers: {
-        "Content-Type": "application/json",
-        // Add your authorization header here:
-        Authorization: `Bearer ${localStorage.getItem("token")}`, // or however you store your token
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setAlerts(data.data.slice(0, 3));
-        setUnreadCount(data.data.length);
-      });
+    const loadAlerts = async () => {
+      const res = await fetch(
+        "http://localhost:5000/api/v1/notifications/",
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Alerts API failed:", res.status, text);
+        return;
+      }
+
+      const data = await res.json();
+      console.log("Data Alert:", data);
+
+      setAlerts(data.data.slice(0, 3));
+      setUnreadCount(data.data.length);
+    };
+
+    loadAlerts();
   }, []);
 
   /* 2️⃣ Socket real-time updates */
   useEffect(() => {
     const socket = getSocket();
     const userId = localStorage.getItem("userId");
-    console.log(userId);
-    socket.connect();
+    console.log("Socket id os the user: ", userId);
     socket.emit("join", userId); // replace with real user id
 
     socket.on("notification:new", (alert: Alert) => {

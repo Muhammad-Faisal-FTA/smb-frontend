@@ -175,6 +175,8 @@ useEffect(() => {
     const token = localStorage.getItem("accessToken"); // adjust key name
 
     const res = await getApiResponseS(endPoint, token);
+    const test = localStorage.setItem("userId", res.userId);
+    console.log("Usert in dash board:", res);
     console.log("KPI : ", res)
     if (!res) {
       console.error("Dashboard KPI fetch failed", res.status);
