@@ -225,6 +225,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
   ArrowRight,
@@ -243,22 +244,20 @@ interface Alert {
 }
 
 export function AlertsWidget() {
+  const router = useRouter();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
   /* 1️⃣ Initial load (HTTP) */
   useEffect(() => {
     const loadAlerts = async () => {
-      const res = await fetch(
-        "http://localhost:5000/api/v1/notifications/",
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
+      const res = await fetch("http://localhost:5000/api/v1/notifications/", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
 
       if (!res.ok) {
         const text = await res.text();
@@ -281,7 +280,7 @@ export function AlertsWidget() {
     const socket = getSocket();
     const userId = localStorage.getItem("userId");
     console.log("Socket id os the user: ", userId);
-    socket.emit("join", userId); // replace with real user id
+    socket.emit("join", userId); 
 
     socket.on("notification:new", (alert: Alert) => {
       setAlerts((prev) => [alert, ...prev].slice(0, 3));
@@ -360,6 +359,9 @@ export function AlertsWidget() {
 
       {/* CTA */}
       <button
+        onClick={() => {
+          router.push("/dashboard/alerts");
+        }}
         className="w-full py-2 rounded-lg flex items-center justify-center gap-2"
         style={{ color: "#4F46E5" }}
       >
