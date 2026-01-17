@@ -1,7 +1,7 @@
-'use client';
+// 'use client';
 
-import { ProductsPage } from '@/components/pages/ProductsPage';
+// import { ProductsPage } from '@/components/pages/ProductsPage';
 
-export default function Products() {
-  return <ProductsPage />;
-}
+// export default function Products() {
+//   return <ProductsPage />;
+// }
