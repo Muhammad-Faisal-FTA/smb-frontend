@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { postApiResponseS } from "@/utils/ApiResponse";
 
-
 interface FinancialSectionProps {
   onCompletionChange: (percentage: number) => void;
 }
@@ -30,8 +29,6 @@ const endpoint = "/finance/business-financial";
 //   return new Promise((resolve) => setTimeout(resolve, 1000));
 // };
 
-
-
 // ✅ Removed all score fields - backend calculates these
 const initialFormData = {
   periodStart: "",
@@ -44,6 +41,7 @@ const initialFormData = {
   currentLiabilities: "",
   payables: "",
   totalDebt: "",
+  monthlyCashflows: "",
   totalEquity: "",
   revenue: "",
   cogs: "",
@@ -93,6 +91,9 @@ export function FinancialHealthSection({
       : 0,
     payables: formData.payables ? Number(formData.payables) : 0,
     totalDebt: formData.totalDebt ? Number(formData.totalDebt) : 0,
+    monthlyCashflows: formData.monthlyCashflows
+      ? Number(formData.monthlyCashflows)
+      : 0,
     totalEquity: formData.totalEquity ? Number(formData.totalEquity) : 0,
     revenue: formData.revenue ? Number(formData.revenue) : 0,
     cogs: formData.cogs ? Number(formData.cogs) : 0,
@@ -109,7 +110,7 @@ export function FinancialHealthSection({
       ? Number(formData.interestExpense)
       : 0,
     avgInventory: formData.avgInventory ? Number(formData.avgInventory) : 0,
-    // ✅ Backend will calculate and add:
+    // Backend will calculate and add:
     // scoreLH, scorePH, scoreCS, scoreEH, scoreSH, financialHealthScore
   });
 
@@ -150,7 +151,7 @@ export function FinancialHealthSection({
       await postApiResponseS(endpoint, payload, token);
 
       setMessage(
-        "✓ Financial data saved successfully! Scores calculated by backend."
+        "✓ Financial data saved successfully! Scores calculated by backend.",
       );
       setTimeout(() => setMessage(""), 4000);
     } catch (error) {
@@ -185,8 +186,8 @@ export function FinancialHealthSection({
       if (Math.abs(expectedGrossProfit - actualGrossProfit) > 0.01) {
         errors.push(
           `Gross Profit should be ${expectedGrossProfit.toFixed(
-            2
-          )} (Revenue - COGS)`
+            2,
+          )} (Revenue - COGS)`,
         );
       }
     }
@@ -214,7 +215,7 @@ export function FinancialHealthSection({
   const renderNumberInput = (
     label: string,
     field: keyof typeof formData,
-    prefix?: string
+    prefix?: string,
   ) => (
     <div>
       <label className="block text-slate-700 mb-2 font-medium">{label}</label>
@@ -291,8 +292,8 @@ export function FinancialHealthSection({
                 message.includes("✓")
                   ? "bg-green-50 text-green-700 border border-green-200"
                   : message.includes("⚠")
-                  ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                  : "bg-red-50 text-red-700 border border-red-200"
+                    ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                    : "bg-red-50 text-red-700 border border-red-200"
               }`}
             >
               {message}
@@ -330,14 +331,14 @@ export function FinancialHealthSection({
               {renderNumberInput(
                 "Accounts Receivable",
                 "accountsReceivable",
-                "$"
+                "$",
               )}
               {renderNumberInput("Inventory", "inventory", "$")}
               {renderNumberInput("Average Inventory", "avgInventory", "$")}
               {renderNumberInput(
                 "Other Current Assets",
                 "currentAssetsOther",
-                "$"
+                "$",
               )}
             </div>
           </div>
@@ -351,10 +352,11 @@ export function FinancialHealthSection({
               {renderNumberInput(
                 "Current Liabilities",
                 "currentLiabilities",
-                "$"
+                "$",
               )}
               {renderNumberInput("Payables", "payables", "$")}
               {renderNumberInput("Total Debt", "totalDebt", "$")}
+              {renderNumberInput("Monthly Cashflows", "monthlyCashflows", "$")}
               {renderNumberInput("Total Equity", "totalEquity", "$")}
             </div>
           </div>
@@ -371,12 +373,12 @@ export function FinancialHealthSection({
               {renderNumberInput(
                 "Operating Expenses",
                 "operatingExpenses",
-                "$"
+                "$",
               )}
               {renderNumberInput(
                 "Monthly Operating Expenses",
                 "monthlyOperatingExpenses",
-                "$"
+                "$",
               )}
               {renderNumberInput("Net Profit", "netProfit", "$")}
               {renderNumberInput("EBITDA", "ebitda", "$")}

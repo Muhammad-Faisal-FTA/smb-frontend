@@ -17,7 +17,7 @@ export const getApiResponse = async (endPoint) => {
 export const getApiResponseS = async (endPoint, token) => {
   console.log("token from S : ", token)
   try {
-    // console.log("API Server:", server,endPoint);
+    console.log("API Server:", server,endPoint);
     const response = await axios.get(`${server}${endPoint}`, {
     headers: {
       Authorization: `Bearer ${token}`, // <-- Access token
@@ -25,7 +25,7 @@ export const getApiResponseS = async (endPoint, token) => {
     }});
     return response.data.data;
   } catch (error) {
-    console.error("❌ Error in getApiResponseS:", error);
+    console.error("Error in getApiResponseS:", error);
     throw new Error("Unable to fetch API response data..!");
   }
 };
