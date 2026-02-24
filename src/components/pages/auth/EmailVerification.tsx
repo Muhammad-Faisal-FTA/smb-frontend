@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TrendingUp, Key, ArrowRight, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { postApiResponse } from "@/utils/ApiResponse";
@@ -12,37 +12,43 @@ export function EmailVerification({
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-   const userId = localStorage.getItem("userId");
+  const [userId, setUserId] = useState<string | null>(null);
   const endpoint = `/otp/verify-email`;
+
+  // Access localStorage only on the client side
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    setUserId(storedUserId);
+  }, []);
   // handler for verification
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    // api integration
-    try {
-      console.log("Verifying for userId:",userId)
-      const payload = {userId, verificationCode: otp };
-      const result = await postApiResponse(endpoint, payload);
-      console.log(result);
-      onVerification();
-    } catch (error) {
-      console.log(error);
-      const payload = {userId: userId, verificationCode: otp };
-      console.log("Pay load for the email verification : ", payload);
-    }
+    
     if (otp.length < 6) {
       setError("Please enter a valid 6-digit code");
       return;
     }
 
+    if (!userId) {
+      setError("User session not found. Please try logging in again.");
+      return;
+    }
+
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Verifying code:", otp);
+    try {
+      console.log("Verifying for userId:", userId);
+      const payload = { userId, verificationCode: otp };
+      const result = await postApiResponse(endpoint, payload);
+      console.log(result);
+      onVerification();
+    } catch (error) {
+      console.log(error);
+      setError("Verification failed. Please check your code and try again.");
+    } finally {
       setIsLoading(false);
-      // Redirect or show success here
-    }, 1500);
+    }
   };
 
   const handleResend = () => {
